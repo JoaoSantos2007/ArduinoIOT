@@ -1,0 +1,84 @@
+.conf{
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.conf:last-child{
+  margin-bottom: 0px;
+}
+
+.conf__text{
+  font-size: 24px;
+  font-weight: bold;
+  margin-left: 20px;
+}
+
+.conf__input{
+  height: 24px;
+  margin-left: 20px;
+  max-width: 256px;
+  width: calc(100% - 15px);
+}
+
+textarea{
+  height: 64px;
+  overflow-y: scroll;
+  resize: none;
+}
+
+.conf__send{
+  background-color: #27c208;
+  border: none;
+  border-radius: 15px;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: bold;
+  height: 48px;
+  margin: 20px 0px;
+  transition: 200ms;
+  width: 128px;
+}
+
+.conf__send:hover{
+  height: 63px;
+  margin: 12.5px;
+  width: 143px;
+}
+
+@media screen and (max-height: 710px) {
+  body{
+    align-items: flex-start;
+  }
+}
+
+@media screen and (max-height: 800px) {
+  .conf{
+    margin-bottom: 12.5px;
+  }
+
+  .conf__text{
+    font-size: 18px;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  section{
+    border-radius: 0;
+    width: 100%;
+  }
+  
+  .conf{
+    margin-bottom: 12.5px;
+  }
+
+  .conf__text{
+    font-size: 18px;
+    margin-left: 7.5px;
+  }
+
+  .conf__input{
+    margin-left: 7.5px;
+  }
+}

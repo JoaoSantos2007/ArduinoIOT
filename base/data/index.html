@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32</title>
+    <link rel="stylesheet" href="/default.css">
+    <link rel="stylesheet" href="/index.css">
+  </head>
+  <body>
+    <section class="section">
+      <h1>ESP32 - Info</h1>
+
+      <div class="info">
+        <h2 class="info__title">WIFI</h2>
+        <hr class="info__hr">
+        <p class="info__data"><strong>Ip: </strong>%IP_ADDRESS%</p>
+        <p class="info__data"><strong>Ssid: </strong>%SSID%</p>
+        <p class="info__data"><strong>Password: </strong>%WIFI_PASSWORD%</p>
+        <p class="info__data"><strong>Streng: </strong>%WIFI_STRENGH%</p>
+      </div>
+
+      <div class="info">
+        <h2 class="info__title">MQTT</h2>
+        <hr class="info__hr">
+        <p class="info__data"><strong>Ip: </strong>%MQTT_IP%</p>
+        <p class="info__data"><strong>Publish: </strong>%MQTT_PUB%</p>
+        <p class="info__data"><strong>Subscribe: </strong>%MQTT_SUB%</p>
+        <p class="info__data"><strong>User: </strong>%MQTT_USER%</p>
+        <p class="info__data"><strong>Password: </strong>%MQTT_PASSWORD%</p>
+      </div>
+
+      <div class="info">
+        <h2 class="info__title">DEVICE</h2>
+        <hr class="info__hr">
+        <p class="info__data"><strong>Name: </strong>%DEVICE_NAME%</p>
+        <p class="info__data"><strong>Descripton: </strong>%DEVICE_DESCRIPTION%</p>
+        <p class="info__data"><strong>Chip: </strong>%DEVICE_CHIP%</p>
+        <p class="info__data"><strong>Free Memory: </strong>%FREE_MEMORY% bytes</p>
+        <p class="info__data"><strong>Uptime:</strong>%UPTIME% seconds</p>
+        <p class="info__data"><strong>Firmware:</strong>%FIRMWARE_VERSION%</p>
+      </div>
+
+      <a href="/conf">Config</a>
+    </section>
+  </body>
+</html>

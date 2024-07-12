@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32</title>
+    <link rel="stylesheet" href="/default.css">
+    <link rel="stylesheet" href="/conf.css">
+  </head>
+  <body>
+    <section class="section">
+      <h1>ESP32 - Config</h1>
+      <div class="conf">
+        <p class="conf__text">Wifi SSID</p>
+        <input class="conf__input" type="text" id="wifi_SSID" placeholder="Wifi Name" required>
+      </div>
+      <div class="conf">
+        <p class="conf__text">Wifi Password</p>
+        <input class="conf__input" type="text" id="wifi_PASSWORD" placeholder="Wifi password" required>
+      </div>
+      <div class="conf">
+        <p class="conf__text">Mqtt IP</p>
+        <input class="conf__input" type="text" id="mqtt_IP" placeholder="Mqtt IP adresses">
+      </div>
+      <div class="conf">
+        <p class="conf__text">Publish Topic</p>
+        <input class="conf__input" type="text" id="mqtt_PUBLISH" placeholder="Sending topic">
+      </div>
+      <div class="conf">
+        <p class="conf__text">Subscribe Topic</p>
+        <input class="conf__input" type="text" id="mqtt_SUBSCRIBE" placeholder="Receiving topic">
+      </div>
+      <div class="conf">
+        <p class="conf__text">Mqtt User</p>
+        <input class="conf__input" type="text" id="mqtt_USER" placeholder="Mqtt user if needed">
+      </div>
+      <div class="conf">
+        <p class="conf__text">Mqtt Password</p>
+        <input class="conf__input" type="text" id="mqtt_PASSWORD" placeholder="Mqtt password if needed">
+      </div>
+      <div class="conf">
+        <p class="conf__text">Device Name</p>
+        <input class="conf__input" type="text" id="esp_NAME" placeholder="Esp32 Something">
+      </div>
+      <div class="conf">
+        <p class="conf__text">Device Description</p>
+        <textarea class="conf__input" id="esp_DESCRIPTION" placeholder="Esp32 descriptions"></textarea>
+      </div>
+      <button class="conf__send" id="button">Save and Reboot</button>
+    </section>
+
+    <script>
+      // document.getElementById('wifi_SSID').value = '' || ''
+      const btn = document.getElementById('button');
+      btn.addEventListener('click', () => {
+        window.alert('Button clicked!');
+      });
+    </script>
+  </body>
+</html>
