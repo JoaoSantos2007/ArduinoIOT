@@ -23,6 +23,10 @@
         <input class="conf__input" type="text" id="mqtt_IP" placeholder="Mqtt IP adresses">
       </div>
       <div class="conf">
+        <p class="conf__text">Mqtt Port</p>
+        <input class="conf__input" type="text" id="mqtt_PORT" placeholder="Mqtt Port">
+      </div>
+      <div class="conf">
         <p class="conf__text">Publish Topic</p>
         <input class="conf__input" type="text" id="mqtt_PUBLISH" placeholder="Sending topic">
       </div>
@@ -49,12 +53,10 @@
       <button class="conf__send" id="button">Save and Reboot</button>
     </section>
 
+    <script src="/conf.js"></script>
     <script>
       // document.getElementById('wifi_SSID').value = '' || ''
-      const btn = document.getElementById('button');
-      btn.addEventListener('click', () => {
-        window.alert('Button clicked!');
-      });
+      
     </script>
   </body>
 </html>

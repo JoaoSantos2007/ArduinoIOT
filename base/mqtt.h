@@ -2,6 +2,7 @@
 #define MQTT_H
 
 #include <PubSubClient.h>
+#include <Preferences.h>
 #include <ArduinoJson.h>
 
 void setupMQTT(PubSubClient& client, const char* MQTT_IP, const int MQTT_PORT);

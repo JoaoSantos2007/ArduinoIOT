@@ -47,13 +47,13 @@ textarea{
   width: 143px;
 }
 
-@media screen and (max-height: 710px) {
+@media screen and (max-height: 770px) {
   body{
     align-items: flex-start;
   }
 }
 
-@media screen and (max-height: 800px) {
+@media screen and (max-height: 855px) {
   .conf{
     margin-bottom: 12.5px;
   }

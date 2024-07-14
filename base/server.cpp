@@ -1,4 +1,3 @@
-#include "ESPAsyncWebServer.h"
 /*
 =========================================
             SERVER FUNCTIONS
@@ -7,7 +6,43 @@
 
 #include "server.h"
 
-void setupServer(AsyncWebServer& server){
+String processor(const String& arg, Preferences* preferences){
+  if (arg == "IP_ADDRESS") {
+    return "192.168.1.3";
+  } else if (arg == "SSID") {
+    return preferences->getString("WIFI_SSID");
+  } else if (arg == "WIFI_PASSWORD") {
+    String password = preferences->getString("WIFI_PASSWORD");
+
+    if (!password.isEmpty()) return "Saved";
+    else return "Not Saved";
+  } else if (arg == "WIFI_STRENGH") {
+    return "54";
+  } else if (arg == "MQTT_IP") {
+    return preferences->getString("MQTT_ADDRESS");
+  } else if (arg == "MQTT_PORT") {
+    return preferences->getString("MQTT_PORT");
+  } else if (arg == "MQTT_PUB") {
+    return preferences->getString("MQTT_PUBLISH");
+  } else if (arg == "MQTT_SUB") {
+    return preferences->getString("MQTT_SUBSCRIBE");
+  } else if (arg == "MQTT_USER") {
+    return preferences->getString("MQTT_USER");
+  } else if (arg == "MQTT_PASSWORD") {
+    String password = preferences->getString("MQTT_PASSWORD");
+
+    if (!password.isEmpty()) return "Saved";
+    else return "Not Saved";
+  } else if (arg == "DEVICE_NAME") {
+    return preferences->getString("DEVICE_NAME");
+  } else if (arg == "DEVICE_DESCRIPTION") {
+    return preferences->getString("DEVICE_DESCRIPTION");
+  }
+
+  return "None";
+}
+
+void setupServer(AsyncWebServer& server, Preferences* preferences){
   if(LittleFS.begin(true)){
     Serial.println("LittleFS mounted successfully");
   }else{
@@ -18,33 +53,72 @@ void setupServer(AsyncWebServer& server){
     request->send(LittleFS, "/default.css", "text/css");
   });
 
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/index.html", "text/html", false, processor);
+  server.on("/", HTTP_GET, [preferences](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/index.html", "text/html", false, [preferences](const String& arg) -> String { 
+      return processor(arg, preferences); 
+    });
   });
 
   server.on("/index.css", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(LittleFS, "/index.css", "text/css");
   });
 
-  server.on("/conf", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/conf.html", "text/html", false, processor);
+  server.on("/conf", HTTP_GET, [preferences](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/conf.html", "text/html", false, [preferences](const String& arg) -> String { 
+      return processor(arg, preferences); 
+    });
   });
 
   server.on("/conf.css", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(LittleFS, "/conf.css", "text/css");
   });
 
-  server.on("/setup", HTTP_POST, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/index.html", "text/html", false, processor);
+  server.on("/conf.js", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/conf.js", "text/js");
   });
 
-  // Start server
+  server.on(
+    "/setup", HTTP_POST, 
+    [](AsyncWebServerRequest *request){}, 
+    NULL, 
+    [preferences](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+      handleSetup(request, data, len, index, total, preferences);
+    }
+  );
+
   server.begin();
 }
 
-String processor(const String& var){
-  if(var == "IP_ADDRESS"){
-    return "192.168.1.3";
+void handleSetup(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total, Preferences* preferences) {
+  // Converta os dados recebidos para uma String
+  String body = "";
+  for (size_t i = 0; i < len; i++) {
+    body += (char)data[i];
   }
-  return "None";
+
+  // Criação do documento JSON
+  StaticJsonDocument<200> jsonDoc;
+  DeserializationError error = deserializeJson(jsonDoc, body);
+  
+  if (error) {
+    Serial.print(F("deserializeJson() failed: "));
+    Serial.println(error.f_str());
+    request->send(400, "application/json", "{\"status\":\"Invalid JSON\"}");
+    return;
+  }
+
+  // Verificar os valores do JSON e Guardar na memória permanente
+  if (jsonDoc.containsKey("ssid")) preferences->putString("WIFI_SSID", String(jsonDoc["ssid"].as<const char*>()));
+  if (jsonDoc.containsKey("password")) preferences->putString("WIFI_PASSWORD", String(jsonDoc["password"].as<const char*>()));
+  if (jsonDoc.containsKey("mqttIP")) preferences->putString("MQTT_ADDRESS", String(jsonDoc["mqttIP"].as<const char*>()));
+  if (jsonDoc.containsKey("mqttPort")) preferences->putInt("MQTT_PORT", jsonDoc["mqttPort"].as<int>());
+  if (jsonDoc.containsKey("mqttUser")) preferences->putString("MQTT_USER", String(jsonDoc["mqttUser"].as<const char*>()));
+  if (jsonDoc.containsKey("mqttPassword")) preferences->putString("MQTT_PASSWORD", String(jsonDoc["mqttPassword"].as<const char*>()));
+  if (jsonDoc.containsKey("mqttPub")) preferences->putString("MQTT_PUBLISH", String(jsonDoc["mqttPub"].as<const char*>()));
+  if (jsonDoc.containsKey("mqttSub")) preferences->putString("MQTT_SUBSCRIBE", String(jsonDoc["mqttSub"].as<const char*>()));
+  if (jsonDoc.containsKey("deviceName")) preferences->putString("DEVICE_NAME", String(jsonDoc["deviceName"].as<const char*>()));
+  if (jsonDoc.containsKey("deviceDescription")) preferences->putString("DEVICE_DESCRIPTION", String(jsonDoc["deviceDescription"].as<const char*>()));
+
+  // Enviar uma resposta de sucesso
+  request->send(200, "application/json", "{\"status\":\"OK\"}");
 }

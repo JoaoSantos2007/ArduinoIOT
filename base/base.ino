@@ -8,6 +8,7 @@
 WiFiClient wifiClient;
 AsyncWebServer serverClient(80);
 PubSubClient mqttClient(wifiClient);
+Preferences preferences;
 
 //Verif wifi and mqtt connetions
 void verifConnections(){
@@ -26,11 +27,14 @@ void verifConnections(){
 void setup(){
   Serial.begin(9600);
   Serial.println("started!");
+  
+  // Initialize Preferences
+  preferences.begin("esp32", false);
 
   setupSensors();
   setupWiFi(WIFI_SSID, WIFI_PASSWORD);
   setupMQTT(mqttClient, MQTT_IP, MQTT_PORT);
-  setupServer(serverClient);
+  setupServer(serverClient, &preferences);
   verifConnections();
 }
 
