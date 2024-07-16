@@ -7,39 +7,24 @@
 #include "server.h"
 
 String processor(const String& arg, Preferences* preferences){
-  if (arg == "IP_ADDRESS") {
-    return "192.168.1.3";
-  } else if (arg == "SSID") {
-    return preferences->getString("WIFI_SSID");
-  } else if (arg == "WIFI_PASSWORD") {
-    String password = preferences->getString("WIFI_PASSWORD");
+  if (arg == "IP_ADDRESS") return WiFi.localIP().toString();
+  else if (arg == "SSID") return preferences->getString("WIFI_SSID");
+  else if (arg == "WIFI_PASSWORD") return preferences->getString("WIFI_PASSWORD");
+  else if (arg == "WIFI_STRENGH") return String(WiFi.RSSI());
+  else if (arg == "MQTT_IP") return preferences->getString("MQTT_ADDRESS");
+  else if (arg == "MQTT_PORT") return String(preferences->getInt("MQTT_PORT"));
+  else if (arg == "MQTT_PUB") return preferences->getString("MQTT_PUBLISH");
+  else if (arg == "MQTT_SUB") return preferences->getString("MQTT_SUBSCRIBE");
+  else if (arg == "MQTT_USER") return preferences->getString("MQTT_USER");
+  else if (arg == "MQTT_PASSWORD") return preferences->getString("MQTT_PASSWORD");
+  else if (arg == "DEVICE_NAME") return preferences->getString("DEVICE_NAME");
+  else if (arg == "DEVICE_DESCRIPTION") return preferences->getString("DESCRIPTION");
+  else if (arg == "DEVICE_CHIP") return ESP.getChipModel();
+  else if (arg == "FREE_MEMORY") return String(ESP.getMinFreeHeap());
+  else if (arg == "UPTIME") return String(millis());
+  else if (arg == "FIRMWARE_VERSION") return "1.0.0";
 
-    if (!password.isEmpty()) return "Saved";
-    else return "Not Saved";
-  } else if (arg == "WIFI_STRENGH") {
-    return "54";
-  } else if (arg == "MQTT_IP") {
-    return preferences->getString("MQTT_ADDRESS");
-  } else if (arg == "MQTT_PORT") {
-    return preferences->getString("MQTT_PORT");
-  } else if (arg == "MQTT_PUB") {
-    return preferences->getString("MQTT_PUBLISH");
-  } else if (arg == "MQTT_SUB") {
-    return preferences->getString("MQTT_SUBSCRIBE");
-  } else if (arg == "MQTT_USER") {
-    return preferences->getString("MQTT_USER");
-  } else if (arg == "MQTT_PASSWORD") {
-    String password = preferences->getString("MQTT_PASSWORD");
-
-    if (!password.isEmpty()) return "Saved";
-    else return "Not Saved";
-  } else if (arg == "DEVICE_NAME") {
-    return preferences->getString("DEVICE_NAME");
-  } else if (arg == "DEVICE_DESCRIPTION") {
-    return preferences->getString("DEVICE_DESCRIPTION");
-  }
-
-  return "None";
+  return "";
 }
 
 void setupServer(AsyncWebServer& server, Preferences* preferences){
@@ -117,8 +102,12 @@ void handleSetup(AsyncWebServerRequest *request, uint8_t *data, size_t len, size
   if (jsonDoc.containsKey("mqttPub")) preferences->putString("MQTT_PUBLISH", String(jsonDoc["mqttPub"].as<const char*>()));
   if (jsonDoc.containsKey("mqttSub")) preferences->putString("MQTT_SUBSCRIBE", String(jsonDoc["mqttSub"].as<const char*>()));
   if (jsonDoc.containsKey("deviceName")) preferences->putString("DEVICE_NAME", String(jsonDoc["deviceName"].as<const char*>()));
-  if (jsonDoc.containsKey("deviceDescription")) preferences->putString("DEVICE_DESCRIPTION", String(jsonDoc["deviceDescription"].as<const char*>()));
+  if (jsonDoc.containsKey("deviceDescription")) preferences->putString("DESCRIPTION", String(jsonDoc["deviceDescription"].as<const char*>()));
 
   // Enviar uma resposta de sucesso
-  request->send(200, "application/json", "{\"status\":\"OK\"}");
+  request->send(200, "application/json", "{\"success\":\"OK\"}");
+
+  delay(2000);
+
+  ESP.restart();
 }

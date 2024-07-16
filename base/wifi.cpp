@@ -6,52 +6,55 @@
 
 #include "wifi.h"
 
-long lastWIFIReconnectAttempt = 0;
+unsigned long lastConnectionAttempt = 0;
+const unsigned long connectionTimeout = 3 * 60 * 1000; // 3 minutes
+bool accessPointActive = false;
+bool tryingToConnect = false;
 
-//Setup WIFI
-void setupWiFi(const char* WIFI_SSID, const char* WIFI_PASSWORD){
-  reconnectWiFi(WIFI_SSID, WIFI_PASSWORD);
-}
+void setupWiFi(Preferences& preferences) {
+  String ssid = preferences.getString("WIFI_SSID", "");
+  String password = preferences.getString("WIFI_PASSWORD", "");
 
-bool verifWiFiStatus(){
-  return WiFi.status() == WL_CONNECTED;
-}
-
-//Verif WIFI connection
-bool verifWiFi(const char* WIFI_SSID, const char* WIFI_PASSWORD){
-  if (!verifWiFiStatus()) {
-    long now = millis();
-    if (now - lastWIFIReconnectAttempt > 10000) {
-      lastWIFIReconnectAttempt = now;
-      
-      // Attempt to reconnect
-      if (reconnectWiFi(WIFI_SSID, WIFI_PASSWORD)) {
-        lastWIFIReconnectAttempt = 0;
-      }
-    }
-
-    return false;
+  // Se existir o ssid e password na memória volátil tenta a conexão senão abre o access point
+  if (ssid.length() > 0 && password.length() > 0) {
+    Serial.println("Attempting to connect to WiFi...");
+    WiFi.begin(ssid.c_str(), password.c_str());
+    tryingToConnect = true;
+    lastConnectionAttempt = millis();
   } else {
-    return true;
+    Serial.println("No WiFi credentials, starting Access Point...");
+    startAccessPoint(preferences);
   }
 }
 
+void startAccessPoint(Preferences& preferences) {
+  String deviceName = preferences.getString("DEVICE_NAME", "esp32");
+  WiFi.softAP(deviceName.c_str());
+  IPAddress IP = WiFi.softAPIP();
+  Serial.print("AP IP address: ");
+  Serial.println(IP);
+  accessPointActive = true;
+  tryingToConnect = false;
+}
 
-//Reconnect WIFI connection
-bool reconnectWiFi(const char* WIFI_SSID, const char* WIFI_PASSWORD){
-  WiFi.mode(WIFI_STA);
-  WiFi.setHostname("ESP32");
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD); // Conecta na rede WI-FI
-  
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
+void verifyWiFiConnection(Preferences& preferences) {
+  if (tryingToConnect) { // Se estiver tentando se conectar no wifi espera a conexão ou se o tempo de conexão exceder abre o access point
+    if (WiFi.status() == WL_CONNECTED) { // Se conectou, define as variáveis de controle com false
+      Serial.println("Connected to WiFi!");
+      accessPointActive = false;
+      tryingToConnect = false;
+    } else if (millis() - lastConnectionAttempt >= connectionTimeout) { // Senão conectou e o tempo de conexão excedeu, abre o access point
+      Serial.println("Failed to connect within timeout, starting Access Point...");
+      startAccessPoint(preferences);
+    }
+  } else if (WiFi.status() != WL_CONNECTED && !accessPointActive) { // Se a conexão se perdeu, tenta a reconexão
+    Serial.println("WiFi lost connection, attempting to reconnect...");
+    WiFi.reconnect();
+    tryingToConnect = true;
+    lastConnectionAttempt = millis();
+  } else if (WiFi.status() == WL_CONNECTED && accessPointActive) { // Se a conexão foi feita e o access point ainda estiver aberto, fecha
+    Serial.println("WiFi connected, stopping Access Point...");
+    WiFi.softAPdisconnect(true);
+    accessPointActive = false;
   }
-
-  // Mostra o endereço IP
-  Serial.println();
-  Serial.print("IP Address: ");
-  Serial.println(WiFi.localIP());
-  
-  return verifWiFiStatus();
 }

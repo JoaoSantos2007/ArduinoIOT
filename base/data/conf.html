@@ -12,51 +12,47 @@
       <h1>ESP32 - Config</h1>
       <div class="conf">
         <p class="conf__text">Wifi SSID</p>
-        <input class="conf__input" type="text" id="wifi_SSID" placeholder="Wifi Name" required>
+        <input class="conf__input" type="text" id="wifi_SSID" placeholder="Wifi Name" value="%SSID%">
       </div>
       <div class="conf">
         <p class="conf__text">Wifi Password</p>
-        <input class="conf__input" type="text" id="wifi_PASSWORD" placeholder="Wifi password" required>
+        <input class="conf__input" type="text" id="wifi_PASSWORD" placeholder="Wifi password" value="%WIFI_PASSWORD%">
       </div>
       <div class="conf">
         <p class="conf__text">Mqtt IP</p>
-        <input class="conf__input" type="text" id="mqtt_IP" placeholder="Mqtt IP adresses">
+        <input class="conf__input" type="text" id="mqtt_IP" placeholder="Mqtt IP adresses" value="%MQTT_IP%">
       </div>
       <div class="conf">
         <p class="conf__text">Mqtt Port</p>
-        <input class="conf__input" type="text" id="mqtt_PORT" placeholder="Mqtt Port">
+        <input class="conf__input" type="text" id="mqtt_PORT" placeholder="Mqtt Port" value="%MQTT_PORT%">
       </div>
       <div class="conf">
         <p class="conf__text">Publish Topic</p>
-        <input class="conf__input" type="text" id="mqtt_PUBLISH" placeholder="Sending topic">
+        <input class="conf__input" type="text" id="mqtt_PUBLISH" placeholder="Sending topic" value="%MQTT_PUB%">
       </div>
       <div class="conf">
         <p class="conf__text">Subscribe Topic</p>
-        <input class="conf__input" type="text" id="mqtt_SUBSCRIBE" placeholder="Receiving topic">
+        <input class="conf__input" type="text" id="mqtt_SUBSCRIBE" placeholder="Receiving topic" value="%MQTT_SUB%">
       </div>
       <div class="conf">
         <p class="conf__text">Mqtt User</p>
-        <input class="conf__input" type="text" id="mqtt_USER" placeholder="Mqtt user if needed">
+        <input class="conf__input" type="text" id="mqtt_USER" placeholder="Mqtt user if needed" value="%MQTT_USER%">
       </div>
       <div class="conf">
         <p class="conf__text">Mqtt Password</p>
-        <input class="conf__input" type="text" id="mqtt_PASSWORD" placeholder="Mqtt password if needed">
+        <input class="conf__input" type="text" id="mqtt_PASSWORD" placeholder="Mqtt password if needed" value="%MQTT_PASSWORD%">
       </div>
       <div class="conf">
         <p class="conf__text">Device Name</p>
-        <input class="conf__input" type="text" id="esp_NAME" placeholder="Esp32 Something">
+        <input class="conf__input" type="text" id="esp_NAME" placeholder="Esp32 Something" value="%DEVICE_NAME%">
       </div>
       <div class="conf">
         <p class="conf__text">Device Description</p>
-        <textarea class="conf__input" id="esp_DESCRIPTION" placeholder="Esp32 descriptions"></textarea>
+        <textarea class="conf__input" id="esp_DESCRIPTION" placeholder="Esp32 descriptions">%DEVICE_DESCRIPTION%</textarea>
       </div>
       <button class="conf__send" id="button">Save and Reboot</button>
     </section>
 
     <script src="/conf.js"></script>
-    <script>
-      // document.getElementById('wifi_SSID').value = '' || ''
-      
-    </script>
   </body>
 </html>

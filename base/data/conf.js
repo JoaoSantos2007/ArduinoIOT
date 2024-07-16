@@ -36,6 +36,7 @@ btn.addEventListener('click', () => {
       response.json()
         .then((result) => {
           console.log(result)
+          window.alert("Rebooting...")
         })
         .catch((err) => {
           console.error(err)

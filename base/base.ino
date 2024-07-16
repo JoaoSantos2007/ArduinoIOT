@@ -1,5 +1,4 @@
 //Import libraries
-#include "conf.h" // Here are the enviroment variables
 #include "sensor.h"
 #include "server.h"
 #include "wifi.h"
@@ -11,9 +10,9 @@ PubSubClient mqttClient(wifiClient);
 Preferences preferences;
 
 //Verif wifi and mqtt connetions
-void verifConnections(){
-  verifWiFi(WIFI_SSID, WIFI_PASSWORD);
-  verifMQTT(mqttClient, MQTT_ID, SUBSCRIBE_TOPIC, MQTT_USER, MQTT_PASSWORD);
+void verifyConnections(){
+  verifyWiFiConnection(preferences);
+  verifyMQTTConnection(mqttClient, preferences);
 }
 
 /*
@@ -22,8 +21,6 @@ void verifConnections(){
 ======================================
 */
 
-
-// Setup function
 void setup(){
   Serial.begin(9600);
   Serial.println("started!");
@@ -32,14 +29,12 @@ void setup(){
   preferences.begin("esp32", false);
 
   setupSensors();
-  setupWiFi(WIFI_SSID, WIFI_PASSWORD);
-  setupMQTT(mqttClient, MQTT_IP, MQTT_PORT);
+  setupWiFi(preferences);
+  setupMQTT(mqttClient, preferences);
   setupServer(serverClient, &preferences);
-  verifConnections();
 }
 
-// Loop function
 void loop(){
   readSensors();
-  verifConnections();
+  verifyConnections();
 }

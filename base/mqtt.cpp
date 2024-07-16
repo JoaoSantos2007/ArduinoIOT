@@ -6,43 +6,49 @@
 
 #include "mqtt.h"
 
-long lastMQTTReconnectAttempt = 0;
+const unsigned long ReconnectBreakTime = 10 * 1000; // 10 seconds
+unsigned long lastMQTTReconnectAttempt = 0;
 
 // Setup MQTT
-void setupMQTT(PubSubClient& client, const char* MQTT_IP, const int MQTT_PORT){
-  client.setServer(MQTT_IP, MQTT_PORT);
-  client.setCallback(receiveMQTT);
+void setupMQTT(PubSubClient& client, Preferences& preferences){
+  String mqttServer = preferences.getString("MQTT_ADDRESS", "");
+  int mqttPort = preferences.getInt("MQTT_PORT", 0);
+
+  if (mqttServer.length() > 0 && mqttPort > 0) {
+    IPAddress mqttIP;
+    mqttIP.fromString(mqttServer);
+
+    client.setServer(mqttIP, mqttPort);
+    client.setCallback(receiveMQTT);
+  }
 }
 
 // Verif MQTT connection and Reconnect if needed
-bool verifMQTT(PubSubClient& client, const char* MQTT_ID, const char* SUBSCRIBE_TOPIC, const char* MQTT_USER, const char* MQTT_PASSWORD){
-  if (!client.connected()) {
-    long now = millis();
-
-    if (now - lastMQTTReconnectAttempt > 5000) {
-      lastMQTTReconnectAttempt = now;
-      
-      // Attempt to reconnect
-      if (reconnectMQTT(client, MQTT_ID, SUBSCRIBE_TOPIC, MQTT_USER, MQTT_PASSWORD)) {
-        lastMQTTReconnectAttempt = 0;
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  }else{
-    client.loop(); //Keep mqtt connected
-    return true;
+void verifyMQTTConnection(PubSubClient& client, Preferences& preferences){
+  if (WiFi.status() != WL_CONNECTED) return;
+  
+  if(!client.connected()) {
+    if (millis() - lastMQTTReconnectAttempt >= ReconnectBreakTime) {
+      lastMQTTReconnectAttempt = millis();
+      reconnectMQTT(client, preferences); // Attempt to reconnect
+    } 
+  } else {
+    client.loop(); // Keep MQTT connected
   }
 }
 
 // Reconnect MQTT connection
-bool reconnectMQTT(PubSubClient& client, const char* MQTT_ID, const char* SUBSCRIBE_TOPIC, const char* MQTT_USER, const char* MQTT_PASSWORD){
-  if (client.connect(MQTT_ID, MQTT_USER, MQTT_PASSWORD)){
-    client.subscribe(SUBSCRIBE_TOPIC);
-    Serial.println("mqtt");
+bool reconnectMQTT(PubSubClient& client, Preferences& preferences){
+  String deviceName = preferences.getString("DEVICE_NAME", "esp32");
+  String mqttUser = preferences.getString("MQTT_USER", "");
+  String mqttPassword = preferences.getString("MQTT_PASSWORD", "");
+  String subscribeTopic = preferences.getString("MQTT_SUBSCRIBE", "");
+
+  bool connected = client.connect(deviceName.c_str(), mqttUser.c_str(), mqttPassword.c_str());
+
+  if (connected){
+    client.subscribe(subscribeTopic.c_str());
+    Serial.println("Connected to MQTT broker!");
 
     return true;
   }
@@ -52,7 +58,7 @@ bool reconnectMQTT(PubSubClient& client, const char* MQTT_ID, const char* SUBSCR
 
 // Receive a broker message
 void receiveMQTT(char* topic, byte* payload, unsigned int length){
-  Serial.println("Ok111");
+  Serial.println("Message received");
   String msg;
   //obtem a string do payload recebido
   for (int i = 0; i < length; i++){
@@ -68,8 +74,8 @@ void receiveMQTT(char* topic, byte* payload, unsigned int length){
 }
 
 // Send a message in MQTT
-void sendMQTT(PubSubClient& client, const char* PUBLISH_TOPIC, StaticJsonDocument<256> doc){
+void sendMQTT(PubSubClient& client, Preferences& preferences, StaticJsonDocument<256> doc){
   char out[256];
   serializeJson(doc, out);
-  client.publish(PUBLISH_TOPIC, out);
+  client.publish(preferences.getString("MQTT_PUBLISH", "").c_str(), out);
 }
