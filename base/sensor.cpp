@@ -1,3 +1,4 @@
+#include "HardwareSerial.h"
 /*
 ======================================
           Sensor Functions
@@ -7,10 +8,10 @@
 #include "sensor.h"
 
 // Light variables
-const short int switch1_PIN = 22;
-const short int switch2_PIN = 23;
-const short int light1_PIN = 21;
-const short int light2_PIN = 15;
+const short int switch1_PIN = 35;
+const short int switch2_PIN = 34;
+const short int light1_PIN = 32;
+const short int light2_PIN = 33;
 short int switch1 = 0;
 short int switch2 = 0;
 
@@ -43,4 +44,12 @@ void readSensors(){
     switch2 = !switch2;
     updateLightState(light2_PIN);
   }
+}
+
+void sensorCallback(const JsonDocument& doc){
+  Serial.println("Sensor callback called");
+  serializeJsonPretty(doc, Serial);
+  
+  if(doc["test"] == "ok1") updateLightState(light1_PIN);
+  if(doc["test"] == "ok2") updateLightState(light2_PIN);
 }

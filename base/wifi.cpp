@@ -41,6 +41,8 @@ void verifyWiFiConnection(Preferences& preferences) {
   if (tryingToConnect) { // Se estiver tentando se conectar no wifi espera a conexão ou se o tempo de conexão exceder abre o access point
     if (WiFi.status() == WL_CONNECTED) { // Se conectou, define as variáveis de controle com false
       Serial.println("Connected to WiFi!");
+      Serial.print("IP Address: ");
+      Serial.println(WiFi.localIP());
       accessPointActive = false;
       tryingToConnect = false;
     } else if (millis() - lastConnectionAttempt >= connectionTimeout) { // Senão conectou e o tempo de conexão excedeu, abre o access point

@@ -23,14 +23,14 @@ void verifyConnections(){
 
 void setup(){
   Serial.begin(9600);
-  Serial.println("started!");
+  Serial.println("Started!");
   
   // Initialize Preferences
   preferences.begin("esp32", false);
 
   setupSensors();
   setupWiFi(preferences);
-  setupMQTT(mqttClient, preferences);
+  setupMQTT(mqttClient, preferences, sensorCallback);
   setupServer(serverClient, &preferences);
 }
 

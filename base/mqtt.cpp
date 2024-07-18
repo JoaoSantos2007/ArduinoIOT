@@ -10,7 +10,7 @@ const unsigned long ReconnectBreakTime = 10 * 1000; // 10 seconds
 unsigned long lastMQTTReconnectAttempt = 0;
 
 // Setup MQTT
-void setupMQTT(PubSubClient& client, Preferences& preferences){
+void setupMQTT(PubSubClient& client, Preferences& preferences, CallbackType callback){
   String mqttServer = preferences.getString("MQTT_ADDRESS", "");
   int mqttPort = preferences.getInt("MQTT_PORT", 0);
 
@@ -19,7 +19,10 @@ void setupMQTT(PubSubClient& client, Preferences& preferences){
     mqttIP.fromString(mqttServer);
 
     client.setServer(mqttIP, mqttPort);
-    client.setCallback(receiveMQTT);
+    // client.setCallback(receiveMQTT);
+    client.setCallback([callback](char* topic, byte* payload, unsigned int length){
+      receiveMQTT(topic, payload, length, callback);
+    });
   }
 }
 
@@ -57,7 +60,7 @@ bool reconnectMQTT(PubSubClient& client, Preferences& preferences){
 }
 
 // Receive a broker message
-void receiveMQTT(char* topic, byte* payload, unsigned int length){
+void receiveMQTT(char* topic, byte* payload, unsigned int length, CallbackType callback){
   Serial.println("Message received");
   String msg;
   //obtem a string do payload recebido
@@ -71,6 +74,8 @@ void receiveMQTT(char* topic, byte* payload, unsigned int length){
 
   StaticJsonDocument<2048> doc;
   deserializeJson(doc, payload);
+
+  callback(doc);
 }
 
 // Send a message in MQTT
