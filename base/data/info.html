@@ -4,12 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ESP32</title>
-    <link rel="stylesheet" href="/default.css">
     <link rel="stylesheet" href="/index.css">
+    <link rel="stylesheet" href="/info.css">
   </head>
   <body>
-    <section class="section">
-      <h1>ESP32 - Info</h1>
+    <section class="main">
+      <nav class="navbar">
+        <a class="navbar__link navbar__selected" href="/info.html">
+          <p>Info</p>
+        </a>
+        <a class="navbar__link" href="/sensor.html">
+          <p>Sensors</p>
+        </a>
+        <a class="navbar__link" href="/conf.html">
+          <p>Conf</p>
+        </a>
+      </nav>
 
       <div class="info">
         <h2 class="info__title">WIFI</h2>
@@ -40,8 +50,6 @@
         <p class="info__data"><strong>Uptime: </strong>%UPTIME% milliseconds</p>
         <p class="info__data"><strong>Firmware: </strong>%FIRMWARE_VERSION%</p>
       </div>
-
-      <a href="/conf">Config</a>
     </section>
   </body>
 </html>
