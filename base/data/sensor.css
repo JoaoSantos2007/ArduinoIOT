@@ -1,7 +1,6 @@
-.sensors{
+.sensors, .sensors__create{
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
   width: 100%;
 }
 
@@ -22,13 +21,13 @@
   margin-bottom: 30px;
 }
 
+
 .sensor__conf{
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-left: 10px;
 }
-
 
 .sensor__field{
   font-size: 22px;
@@ -42,6 +41,20 @@
 
 .sensor__conf input{
   width: 32px;
+}
+
+.sensors__create .sensor{
+  margin-bottom: 0px;
+}
+
+.sensors__create .sensor__add{
+  width: 48px;
+  height: 24px;
+  border: none;
+  color: #ffffff;
+  font-weight: bold;
+  background-color: #0041ce;
+  cursor: pointer;
 }
 
 @media screen and (max-height: 630px) {

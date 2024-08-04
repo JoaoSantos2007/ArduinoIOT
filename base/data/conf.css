@@ -28,25 +28,6 @@ textarea{
   resize: none;
 }
 
-.conf__send{
-  background-color: #27c208;
-  border: none;
-  border-radius: 15px;
-  color: #ffffff;
-  cursor: pointer;
-  font-weight: bold;
-  height: 48px;
-  margin: 20px 0px;
-  transition: 200ms;
-  width: 128px;
-}
-
-.conf__send:hover{
-  height: 63px;
-  margin: 12.5px;
-  width: 143px;
-}
-
 @media screen and (max-height: 770px) {
   body{
     align-items: flex-start;
