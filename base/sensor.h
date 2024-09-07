@@ -6,6 +6,8 @@
 
 void setupSensors();
 void updateLightState(int light_pin);
+void readSwitches();
+void readLuminosity();
 void readSensors();
 void sensorCallback(const JsonDocument& doc);
 

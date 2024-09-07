@@ -46,3 +46,14 @@ btn.addEventListener('click', () => {
       console.error(err);
     })
 });
+
+if(wifiSsid !== "%SSID%") document.getElementById("wifi_SSID").value += wifiSsid
+if(wifiPassword !== "%WIFI_PASSWORD%") document.getElementById("wifi_PASSWORD").value += wifiPassword
+if(mqttIp !== "%MQTT_IP%") document.getElementById("mqtt_IP").value += mqttIp
+if(mqttPort !== "%MQTT_PORT%") document.getElementById("mqtt_PORT").value += mqttPort
+if(mqttPub !== "%MQTT_PUB%") document.getElementById("mqtt_PUBLISH").value += mqttPub
+if(mqttSub !== "%MQTT_SUB%") document.getElementById("mqtt_SUBSCRIBE").value += mqttSub
+if(mqttUser !== "%MQTT_USER%") document.getElementById("mqtt_USER").value += mqttUser
+if(mqttPassword !== "%MQTT_PASSWORD%") document.getElementById("mqtt_PASSWORD").value += mqttPassword
+if(deviceName !== "%DEVICE_NAME%") document.getElementById("device_NAME").value += deviceName
+if(deviceDescription !== "%DEVICE_DESCRIPTION%") document.getElementById("device_DESCRIPTION").value += deviceDescription

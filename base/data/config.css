@@ -1,21 +1,32 @@
-.conf{
+.configs{
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px;
   width: 100%;
+  margin-bottom: 10px;
 }
 
-.conf:last-child{
+.configs:last-of-type{
   margin-bottom: 0px;
 }
 
-.conf__text{
-  font-size: 24px;
+.configs__title{
+  font-size: 26px;
   font-weight: bold;
+  margin-left: 10px;
+}
+
+.configs__hr{
+  width: 95%;
+}
+
+.config__text{
+  font-size: 18px;
+  font-weight:  500;
   margin-left: 20px;
 }
 
-.conf__input{
+.config__input{
+  margin-bottom: 5px;
   height: 24px;
   margin-left: 20px;
   max-width: 256px;
@@ -35,11 +46,11 @@ textarea{
 }
 
 @media screen and (max-height: 855px) {
-  .conf{
+  .config{
     margin-bottom: 12.5px;
   }
 
-  .conf__text{
+  .config__text{
     font-size: 18px;
   }
 }
@@ -50,16 +61,16 @@ textarea{
     width: 100%;
   }
   
-  .conf{
+  .config{
     margin-bottom: 12.5px;
   }
 
-  .conf__text{
+  .config__text{
     font-size: 18px;
     margin-left: 7.5px;
   }
 
-  .conf__input{
+  .config__input{
     margin-left: 7.5px;
   }
 }

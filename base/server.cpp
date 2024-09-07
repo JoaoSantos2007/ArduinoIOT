@@ -34,32 +34,56 @@ void setupServer(AsyncWebServer& server, Preferences* preferences){
     Serial.println("An error has occurred while mounting LittleFS");
   }
 
+  server.on("/", HTTP_GET, [preferences](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/info.html", "text/html", false, [preferences](const String& arg) -> String { 
+      return processor(arg, preferences); 
+    });
+  });
+
   server.on("/default.css", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(LittleFS, "/default.css", "text/css");
   });
 
-  server.on("/", HTTP_GET, [preferences](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/index.html", "text/html", false, [preferences](const String& arg) -> String { 
+  server.on("/info.html", HTTP_GET, [preferences](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/info.html", "text/html", false, [preferences](const String& arg) -> String { 
       return processor(arg, preferences); 
     });
   });
 
-  server.on("/index.css", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/index.css", "text/css");
+  server.on("/info.css", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/info.css", "text/css");
   });
 
-  server.on("/conf", HTTP_GET, [preferences](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/conf.html", "text/html", false, [preferences](const String& arg) -> String { 
+  server.on("/info.js", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/info.js", "text/js");
+  });
+
+  server.on("/sensor.html", HTTP_GET, [preferences](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/sensor.html", "text/html", false, [preferences](const String& arg) -> String { 
       return processor(arg, preferences); 
     });
   });
 
-  server.on("/conf.css", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/conf.css", "text/css");
+  server.on("/sensor.css", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/sensor.css", "text/css");
   });
 
-  server.on("/conf.js", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/conf.js", "text/js");
+  server.on("/sensor.js", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/sensor.js", "text/js");
+  });
+
+  server.on("/config.html", HTTP_GET, [preferences](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/config.html", "text/html", false, [preferences](const String& arg) -> String { 
+      return processor(arg, preferences); 
+    });
+  });
+
+  server.on("/config.css", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/config.css", "text/css");
+  });
+
+  server.on("/config.js", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/config.js", "text/js");
   });
 
   server.on(

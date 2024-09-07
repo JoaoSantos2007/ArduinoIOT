@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ESP32</title>
-    <link rel="stylesheet" href="/index.css">
+    <link rel="stylesheet" href="/default.css">
     <link rel="stylesheet" href="/info.css">
   </head>
   <body>
@@ -16,40 +16,61 @@
         <a class="navbar__link" href="/sensor.html">
           <p>Sensors</p>
         </a>
-        <a class="navbar__link" href="/conf.html">
+        <a class="navbar__link" href="/config.html">
           <p>Conf</p>
         </a>
       </nav>
 
       <div class="info">
-        <h2 class="info__title">WIFI</h2>
+        <h2 class="info__title">Wifi</h2>
         <hr class="info__hr">
-        <p class="info__data"><strong>Ip: </strong>%IP_ADDRESS%</p>
-        <p class="info__data"><strong>Ssid: </strong>%SSID%</p>
-        <p class="info__data"><strong>Password: </strong>%WIFI_PASSWORD%</p>
-        <p class="info__data"><strong>Streng: </strong>%WIFI_STRENGH%</p>
+        <p class="info__data" id="ipAddress">Ip: </p>
+        <p class="info__data" id="wifiSsid">Ssid: </p>
+        <p class="info__data" id="wifiPassword">Password: </p>
+        <p class="info__data" id="wifiStrength">Strength: </p>
       </div>
 
       <div class="info">
-        <h2 class="info__title">MQTT</h2>
+        <h2 class="info__title">Mqtt</h2>
         <hr class="info__hr">
-        <p class="info__data"><strong>Ip: </strong>%MQTT_IP%:%MQTT_PORT%</p>
-        <p class="info__data"><strong>Publish: </strong>%MQTT_PUB%</p>
-        <p class="info__data"><strong>Subscribe: </strong>%MQTT_SUB%</p>
-        <p class="info__data"><strong>User: </strong>%MQTT_USER%</p>
-        <p class="info__data"><strong>Password: </strong>%MQTT_PASSWORD%</p>
+        <p class="info__data" id="mqttIp">Ip: </p>
+        <p class="info__data" id="mqttPub">Publish: </p>
+        <p class="info__data" id="mqttSub">Subscribe: </p>
+        <p class="info__data" id="mqttUser">User: </p>
+        <p class="info__data" id="mqttPassword">Password: </p>
       </div>
 
       <div class="info">
-        <h2 class="info__title">DEVICE</h2>
+        <h2 class="info__title">Device</h2>
         <hr class="info__hr">
-        <p class="info__data"><strong>Name: </strong>%DEVICE_NAME%</p>
-        <p class="info__data"><strong>Descripton: </strong>%DEVICE_DESCRIPTION%</p>
-        <p class="info__data"><strong>Chip: </strong>%DEVICE_CHIP%</p>
-        <p class="info__data"><strong>Free Memory: </strong>%FREE_MEMORY% bytes</p>
-        <p class="info__data"><strong>Uptime: </strong>%UPTIME% milliseconds</p>
-        <p class="info__data"><strong>Firmware: </strong>%FIRMWARE_VERSION%</p>
+        <p class="info__data" id="deviceName">Name: </p>
+        <p class="info__data" id="deviceDescription">Descripton: </p>
+        <p class="info__data" id="deviceChip">Chip: </p>
+        <p class="info__data" id="freeMemory">Free Memory: </p>
+        <p class="info__data" id="uptime">Uptime: </p>
+        <p class="info__data" id="firmware">Firmware: </p>
       </div>
     </section>
+
+    <script>
+      const ipAddress = "%IP_ADDRESS%"
+      const wifiSsid = "%SSID%"
+      const wifiPassword = "%WIFI_PASSWORD%"
+      const wifiStrength = "%WIFI_STRENGH%"
+      const mqttIp = "%MQTT_IP%"
+      const mqttPort = "%MQTT_PORT%"
+      const mqttPub = "%MQTT_PUB%"
+      const mqttSub = "%MQTT_SUB%"
+      const mqttUser = "%MQTT_USER%"
+      const mqttPassword = "%MQTT_PASSWORD%"
+      const deviceName = "%DEVICE_NAME%"
+      const deviceDescription = "%DEVICE_DESCRIPTION%"
+      const deviceChip = "%DEVICE_CHIP%"
+      const freeMemory = "%FREE_MEMORY%"
+      const uptime = "%UPTIME%"
+      const firmware = "%FIRMWARE_VERSION%"
+    </script>
+
+    <script src="/info.js" async></script>
   </body>
 </html>
