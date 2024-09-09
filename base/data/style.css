@@ -1,0 +1,251 @@
+/*
+========================
+      Reset CSS
+========================
+*/
+a,abbr,acronym,address,applet,article,aside,audio,b,big,blockquote,body,canvas,caption,center,cite,code,dd,del,details,dfn,div,dl,dt,em,embed,fieldset,figcaption,figure,footer,form,h1,h2,h3,h4,h5,h6,header,hgroup,html,i,iframe,img,ins,kbd,label,legend,li,mark,menu,nav,object,ol,output,p,pre,q,ruby,s,samp,section,small,span,strike,strong,sub,summary,sup,table,tbody,td,tfoot,th,thead,time,tr,tt,u,ul,var,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:after,blockquote:before,q:after,q:before{content:'';content:none}table{border-collapse:collapse;border-spacing:0}
+
+/*
+========================
+        Main
+========================
+*/
+html, body{
+  background-color: #808080;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+}
+
+body{
+  overflow: hidden;
+}
+
+.main{
+  background-color: #ffffff;
+  border-radius: 36px;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  max-height: 100%;
+  justify-content: flex-start;
+  overflow-y: auto;
+  width: 50%;
+}
+
+
+/*
+========================
+        Navbar
+========================
+*/
+.navbar{
+  border-top-left-radius: 36px;
+  border-top-right-radius: 36px;
+  width: 100%;
+  height: 64px;
+  background-color: #ffae16;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.navbar__link{
+  width: 100%;
+  height: 64px;
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-right: 1px #575252 solid;
+  font-size: 24px;
+  color: #ffffff;
+  background-color: #ffae16;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.navbar__link:first-child{
+  border-top-left-radius: 36px;
+}
+
+.navbar__link:last-child{
+  border: none;
+  border-top-right-radius: 36px;
+}
+
+.navbar__selected, .navbar__link:hover{
+  background-color: #d68b00;
+}
+
+/*
+========================
+        Content
+========================
+*/
+.content {
+  display: none;
+  padding: 0px 10px;
+  margin-bottom: 10px;
+}
+
+.content__active {
+  display: block;
+}
+
+.content__area{
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.content__title{
+  font-size: 26px;
+  font-weight: bold;
+}
+
+.content__hr{
+  width: 97.5%;
+}
+
+.content__text{
+  font-size: 18px;
+  margin-bottom: 5px;
+  margin-left: 10px;
+}
+
+.content__save{
+  background-color: #27c208;
+  border: none;
+  border-radius: 15px;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: bold;
+  height: 48px;
+  margin: 20px 0px;
+  transition: 200ms;
+  width: 128px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.content__save:hover{
+  height: 63px;
+  margin: 12.5px auto;
+  width: 143px;
+}
+
+/*
+========================
+        Sensor
+========================
+*/
+
+.sensor{
+  display: flex;
+  align-items: center;
+  margin-left: 30px;
+  margin-bottom: 30px;
+  overflow-x: scroll;
+}
+
+.sensor__conf{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.sensor__conf:last-child{
+  margin-right: 10px;
+}
+
+.sensor__field{
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.sensor__conf select{
+  width: 64px;
+}
+
+.sensor__conf input{
+  width: 32px;
+}
+
+.sensors__create .sensor{
+  margin-bottom: 0px;
+}
+
+.sensor__btn{
+  width: 48px;
+  height: 24px;
+  border: none;
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.sensor__add{
+  background-color: #0041ce;
+}
+
+.sensor__del{
+  background-color: #ce0000;
+}
+
+/*
+========================
+        Config
+========================
+*/
+
+.config__input{
+  margin-bottom: 5px;
+  height: 24px;
+  margin-left: 10px;
+  max-width: 256px;
+  width: calc(100% - 15px);
+}
+
+textarea{
+  height: 64px;
+  overflow-y: scroll;
+  resize: none;
+}
+
+
+
+@media screen and (max-width: 1200px) {
+  .main{
+    width: 75%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .main{
+    width: 90%;
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .sensor{
+    margin-left: 0px;
+    
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .main{
+    width: 100%;
+    border-radius: 0px;
+  }
+}

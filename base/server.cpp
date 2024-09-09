@@ -6,27 +6,6 @@
 
 #include "server.h"
 
-String processor(const String& arg, Preferences* preferences){
-  if (arg == "IP_ADDRESS") return WiFi.localIP().toString();
-  else if (arg == "SSID") return preferences->getString("WIFI_SSID");
-  else if (arg == "WIFI_PASSWORD") return preferences->getString("WIFI_PASSWORD");
-  else if (arg == "WIFI_STRENGH") return String(WiFi.RSSI());
-  else if (arg == "MQTT_IP") return preferences->getString("MQTT_ADDRESS");
-  else if (arg == "MQTT_PORT") return String(preferences->getInt("MQTT_PORT"));
-  else if (arg == "MQTT_PUB") return preferences->getString("MQTT_PUBLISH");
-  else if (arg == "MQTT_SUB") return preferences->getString("MQTT_SUBSCRIBE");
-  else if (arg == "MQTT_USER") return preferences->getString("MQTT_USER");
-  else if (arg == "MQTT_PASSWORD") return preferences->getString("MQTT_PASSWORD");
-  else if (arg == "DEVICE_NAME") return preferences->getString("DEVICE_NAME");
-  else if (arg == "DEVICE_DESCRIPTION") return preferences->getString("DESCRIPTION");
-  else if (arg == "DEVICE_CHIP") return ESP.getChipModel();
-  else if (arg == "FREE_MEMORY") return String(ESP.getMinFreeHeap());
-  else if (arg == "UPTIME") return String(millis());
-  else if (arg == "FIRMWARE_VERSION") return "1.0.0";
-
-  return "";
-}
-
 void setupServer(AsyncWebServer& server, Preferences* preferences){
   if(LittleFS.begin(true)){
     Serial.println("LittleFS mounted successfully");
@@ -34,56 +13,25 @@ void setupServer(AsyncWebServer& server, Preferences* preferences){
     Serial.println("An error has occurred while mounting LittleFS");
   }
 
-  server.on("/", HTTP_GET, [preferences](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/info.html", "text/html", false, [preferences](const String& arg) -> String { 
-      return processor(arg, preferences); 
-    });
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/index.html", "text/html");
   });
 
-  server.on("/default.css", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/default.css", "text/css");
+  server.on("/index.html", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/index.html", "text/html");
   });
 
-  server.on("/info.html", HTTP_GET, [preferences](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/info.html", "text/html", false, [preferences](const String& arg) -> String { 
-      return processor(arg, preferences); 
-    });
+  server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/style.css", "text/css");
   });
 
-  server.on("/info.css", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/info.css", "text/css");
+  server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/script.js", "text/js");
   });
 
-  server.on("/info.js", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/info.js", "text/js");
-  });
-
-  server.on("/sensor.html", HTTP_GET, [preferences](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/sensor.html", "text/html", false, [preferences](const String& arg) -> String { 
-      return processor(arg, preferences); 
-    });
-  });
-
-  server.on("/sensor.css", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/sensor.css", "text/css");
-  });
-
-  server.on("/sensor.js", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/sensor.js", "text/js");
-  });
-
-  server.on("/config.html", HTTP_GET, [preferences](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/config.html", "text/html", false, [preferences](const String& arg) -> String { 
-      return processor(arg, preferences); 
-    });
-  });
-
-  server.on("/config.css", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/config.css", "text/css");
-  });
-
-  server.on("/config.js", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/config.js", "text/js");
+  server.on("/data", HTTP_GET, [preferences](AsyncWebServerRequest *request) {
+    String jsonData = getDeviceDataJson(preferences);
+    request->send(200, "application/json", jsonData);
   });
 
   server.on(
@@ -96,6 +44,32 @@ void setupServer(AsyncWebServer& server, Preferences* preferences){
   );
 
   server.begin();
+}
+
+String getDeviceDataJson(Preferences* preferences) {
+  StaticJsonDocument<200> jsonDoc;
+
+  jsonDoc["ipAddress"] = WiFi.localIP().toString();
+  jsonDoc["ssid"] = preferences->getString("WIFI_SSID");
+  jsonDoc["wifiPassword"] = preferences->getString("WIFI_PASSWORD");
+  jsonDoc["wifiStrength"] = String(WiFi.RSSI());
+  jsonDoc["mqttAddress"] = preferences->getString("MQTT_ADDRESS");
+  jsonDoc["mqttPort"] = String(preferences->getInt("MQTT_PORT"));
+  jsonDoc["mqttPublish"] = preferences->getString("MQTT_PUBLISH");
+  jsonDoc["mqttSubscribe"] = preferences->getString("MQTT_SUBSCRIBE");
+  jsonDoc["mqttUser"] = preferences->getString("MQTT_USER");
+  jsonDoc["mqttPassword"] = preferences->getString("MQTT_PASSWORD");
+  jsonDoc["deviceName"] = preferences->getString("DEVICE_NAME");
+  jsonDoc["deviceDescription"] = preferences->getString("DESCRIPTION");
+  jsonDoc["deviceChip"] = ESP.getChipModel();
+  jsonDoc["freeMemory"] = String(ESP.getMinFreeHeap());
+  jsonDoc["uptime"] = String(millis() / 1000);
+  jsonDoc["firmware"] = "1.0.0";
+
+  // Converter JSON para string
+  String jsonString;
+  serializeJson(jsonDoc, jsonString);
+  return jsonString;
 }
 
 void handleSetup(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total, Preferences* preferences) {

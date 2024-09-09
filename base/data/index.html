@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ESP32</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+  <main class="main">
+    <nav class="navbar">
+      <button class="navbar__link navbar__selected" id="navbar-info" onclick="showSection('info')">Info</button>
+      <button class="navbar__link" id="navbar-sensor" onclick="showSection('sensor')">Sensors</button>
+      <button class="navbar__link" id="navbar-config" onclick="showSection('config')">Config</button>
+    </nav>
+
+    <section class="content content__active" id="content-info">
+      <div class="content__area">
+        <h2 class="content__title">Wifi</h2>
+        <hr class="content__hr">
+        <p class="content__text" id="ipAddress">Ip: </p>
+        <p class="content__text" id="wifiSsid">Ssid: </p>
+        <p class="content__text" id="wifiPassword">Password: </p>
+        <p class="content__text" id="wifiStrength">Strength: </p>
+      </div>
+
+      <div class="content__area">
+        <h2 class="content__title">Mqtt</h2>
+        <hr class="content__hr">
+        <p class="content__text" id="mqttIp">Ip: </p>
+        <p class="content__text" id="mqttPub">Publish: </p>
+        <p class="content__text" id="mqttSub">Subscribe: </p>
+        <p class="content__text" id="mqttUser">User: </p>
+        <p class="content__text" id="mqttPassword">Password: </p>
+      </div>
+
+      <div class="content__area">
+        <h2 class="content__title">Device</h2>
+        <hr class="content__hr">
+        <p class="content__text" id="deviceName">Name: </p>
+        <p class="content__text" id="deviceDescription">Descripton: </p>
+        <p class="content__text" id="deviceChip">Chip: </p>
+        <p class="content__text" id="freeMemory">Free Memory: </p>
+        <p class="content__text" id="uptime">Uptime: </p>
+        <p class="content__text" id="firmware">Firmware: </p>
+      </div>
+    </section>
+
+    <section class="content" id="content-sensor">
+      <div class="content__area" id="sensors">
+        <h2 class="content__title">Sensors</h2>
+        <hr class="content__hr">
+      </div>
+
+      <div class="content__area">
+        <h2 class="content__title">New Device</h2>
+        <hr class="content__hr">
+
+        <div class="sensor">
+          <div class="sensor__conf">
+            <p class="sensor__field">Type</p>
+            <select id="sensorType-NEW"></select>
+          </div>
+          <div class="sensor__conf">
+            <p class="sensor__field">Pin 1</p>
+            <input type="number" id="sensorPIN1-NEW" min="0">
+          </div>
+          <div class="sensor__conf">
+            <p class="sensor__field">Pin 2</p>
+            <input type="number" id="sensorPIN2-NEW" min="0">
+          </div>
+          <div class="sensor__conf">
+            <p class="sensor__field">Pin 3</p>
+            <input type="number" id="sensorPIN3-NEW" min="0">
+          </div>
+          <div class="sensor__conf">
+            <p class="sensor__field">Add</p>
+            <button class="sensor__btn sensor__add" id="sensorBTN-NEW">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="content__area">
+        <button class="content__save" id="btn-sensor">Save and Reboot</button>
+      </div>
+    </section>
+
+    <section class="content" id="content-config">
+      <div class="content__area">
+        <h2 class="content__title">Wifi</h2>
+        <hr class="content__hr">
+
+        <p class="content__text">Ssid</p>
+        <input class="config__input" type="text" id="input-wifiSsid" placeholder="Wifi Name">
+
+        <p class="content__text">Password</p>
+        <input class="config__input" type="text" id="input-wifiPassword" placeholder="Wifi password">
+      </div>
+
+      <div class="content__area">
+        <h2 class="content__title">Mqtt</h2>
+        <hr class="content__hr">
+
+        <p class="content__text">Ip</p>
+        <input class="config__input" type="text" id="input-mqttIp" placeholder="Mqtt IP adresses">
+
+        <p class="content__text">Port</p>
+        <input class="config__input" type="text" id="input-mqttPort" placeholder="Mqtt Port">
+
+        <p class="content__text">Publish Topic</p>
+        <input class="config__input" type="text" id="input-mqttPub" placeholder="Sending topic">
+
+        <p class="content__text">Subscribe Topic</p>
+        <input class="config__input" type="text" id="input-mqttSub" placeholder="Receiving topic">
+
+        <p class="content__text">User</p>
+        <input class="config__input" type="text" id="input-mqttUser" placeholder="Mqtt user if needed">
+
+        <p class="content__text">Password</p>
+        <input class="config__input" type="text" id="input-mqttPassword" placeholder="Mqtt password if needed">
+      </div>
+
+      <div class="content__area">
+        <h2 class="content__title">Device</h2>
+        <hr class="content__hr">
+
+        <p class="content__text">Name</p>
+        <input class="config__input" type="text" id="input-deviceName" placeholder="Esp32 Something">
+
+        <p class="content__text">Description</p>
+        <textarea class="config__input" id="input-deviceDescription" placeholder="Esp32 descriptions"></textarea>
+      </div>
+
+      <div class="content__area">
+        <button class="content__save" id="btn-config">Save and Reboot</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="/script.js"></script>
+</body>
+
+</html>
