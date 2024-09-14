@@ -152,7 +152,6 @@ body{
   align-items: center;
   margin-left: 30px;
   margin-bottom: 30px;
-  overflow-x: scroll;
 }
 
 .sensor__conf{
@@ -239,7 +238,7 @@ textarea{
 @media screen and (max-width: 560px) {
   .sensor{
     margin-left: 0px;
-    
+    overflow-x: scroll;
   }
 }
 

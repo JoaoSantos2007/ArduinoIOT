@@ -1,56 +1,51 @@
-window.addEventListener('resize', checkHeight);
-window.addEventListener('DOMContentLoaded', () => {
-  checkHeight()
-  renderData()
-  renderSensors(sensors)
-});
-const options = ['light', 'temt6000', 'humidity', 'temperature', 'luminosity']
-//renderSensors(sensors)
+/*
+=========================
+    Setup Functions
+=========================
+*/
 
+let data = null
+window.addEventListener('resize', checkHeight);
+window.addEventListener('DOMContentLoaded', async () => {
+  checkHeight()
+  await getData()
+  renderData(data)
+});
+document.getElementById('btn-config').addEventListener('click', async () => {
+  await sendData()
+});
+document.getElementById('btn-sensor').addEventListener('click', async () => {
+  await sendData()
+});
 document.getElementById('sensorBTN-NEW').addEventListener('click', () => {
   createSensor();
   checkHeight();
 })
 
-async function renderData(){
-  try {
-    const response = await fetch('/data')
-    const result = await response.json()
+/*
+=========================
+    Main Functions
+=========================
+*/
 
-    renderHtml(result)
-  } catch (err) {
-    console.error(err);
+function checkHeight() {
+  const mainElement = document.querySelector('.main');
+  const navbarLinkFirstElement = document.querySelector('.navbar__link:first-child')
+  const navbarLinkLastElement = document.querySelector('.navbar__link:last-child')
+  const navbarElement = document.querySelector('.navbar')
+  const viewportHeight = window.innerHeight;
+
+  if (mainElement.scrollHeight >= viewportHeight) {
+    mainElement.style.borderRadius = '0';
+    navbarElement.style.borderRadius = '0';
+    navbarLinkFirstElement.style.borderRadius = '0';
+    navbarLinkLastElement.style.borderRadius = '0'
+  } else {
+    mainElement.style.borderRadius = '36px';
+    navbarElement.style.borderRadius = '36px';
+    navbarLinkFirstElement.style["border-top-left-radius"] = '36px';
+    navbarLinkLastElement.style["border-top-right-radius"] = '36px'
   }
-}
-
-function renderHtml(data){
-  document.getElementById("ipAddress").textContent += data.ipAddress
-  document.getElementById("wifiSsid").textContent += data.ssid
-  document.getElementById("wifiPassword").textContent += data.wifiPassword
-  document.getElementById("wifiStrength").textContent += data.wifiStrength
-  document.getElementById("mqttIp").textContent += data.mqttAddress
-  document.getElementById("mqttIp").textContent += `:${data.mqttPort}`
-  document.getElementById("mqttPub").textContent += data.mqttPublish
-  document.getElementById("mqttSub").textContent += data.mqttSubscribe
-  document.getElementById("mqttUser").textContent += data.mqttUser
-  document.getElementById("mqttPassword").textContent += data.mqttPassword
-  document.getElementById("deviceName").textContent += data.deviceName
-  document.getElementById("deviceDescription").textContent += data.deviceDescription
-  document.getElementById("deviceChip").textContent += data.deviceChip
-  document.getElementById("freeMemory").textContent += `${Math.ceil(Number(data.freeMemory)/1024)}kb` 
-  document.getElementById("uptime").textContent += `${data.uptime} seconds` 
-  document.getElementById("firmware").textContent += data.firmware
-
-  document.getElementById("input-wifiSsid").value = data.ssid
-  document.getElementById("input-wifiPassword").value = data.wifiPassword
-  document.getElementById("input-mqttIp").value = data.mqttAddress
-  document.getElementById("input-mqttPort").value = data.mqttPort
-  document.getElementById("input-mqttPub").value = data.mqttPublish
-  document.getElementById("input-mqttSub").value = data.mqttSubscribe
-  document.getElementById("input-mqttUser").value = data.mqttUser
-  document.getElementById("input-mqttPassword").value = data.mqttPassword
-  document.getElementById("input-deviceName").value = data.deviceName
-  document.getElementById("input-deviceDescription").value = data.deviceDescription
 }
 
 function showSection(sectionId) {
@@ -73,103 +68,79 @@ function showSection(sectionId) {
   checkHeight()
 }
 
-const configBtn = document.getElementById('btn-config');
-configBtn.addEventListener('click', async () => {
+async function getData() {
   try {
-    const ssid = document.getElementById('input-wifiSsid').value
-    const password = document.getElementById('input-wifiPassword').value
-    const mqttIP = document.getElementById('input-mqttIp').value
-    const mqttPort = document.getElementById('input-mqttPort').value
-    const mqttUser = document.getElementById('input-mqttUser').value
-    const mqttPassword = document.getElementById('mqtt_PASSWORD').value
-    const mqttPub = document.getElementById('input-mqttPub').value
-    const mqttSub = document.getElementById('input-mqttSub').value
-    const deviceName = document.getElementById('input-deviceName').value
-    const deviceDescription = document.getElementById('input-deviceDescription').value
-  
+    const response = await fetch('/data')
+    const result = await response.json()
+
+    data = result
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function renderData(data) {
+  renderSelectOptions(data?.sensorOptions || sensorOptions)
+
+  if(!data) return
+
+  document.getElementById("ipAddress").textContent += data.ipAddress
+  document.getElementById("wifiSsid").textContent += data.ssid
+  document.getElementById("wifiPassword").textContent += data.wifiPassword
+  document.getElementById("wifiStrength").textContent += data.wifiStrength
+  document.getElementById("mqttIp").textContent += data.mqttAddress
+  document.getElementById("mqttIp").textContent += `:${data.mqttPort}`
+  document.getElementById("mqttPub").textContent += data.mqttPublish
+  document.getElementById("mqttSub").textContent += data.mqttSubscribe
+  document.getElementById("mqttUser").textContent += data.mqttUser
+  document.getElementById("mqttPassword").textContent += data.mqttPassword
+  document.getElementById("deviceName").textContent += data.deviceName
+  document.getElementById("deviceDescription").textContent += data.deviceDescription
+  document.getElementById("deviceChip").textContent += data.deviceChip
+  document.getElementById("freeMemory").textContent += `${Math.ceil(Number(data.freeMemory) / 1024)}kb`
+  document.getElementById("uptime").textContent += `${data.uptime} seconds`
+  document.getElementById("firmware").textContent += data.firmware
+
+  document.getElementById("input-wifiSsid").value = data.ssid
+  document.getElementById("input-wifiPassword").value = data.wifiPassword
+  document.getElementById("input-mqttIp").value = data.mqttAddress
+  document.getElementById("input-mqttPort").value = data.mqttPort
+  document.getElementById("input-mqttPub").value = data.mqttPublish
+  document.getElementById("input-mqttSub").value = data.mqttSubscribe
+  document.getElementById("input-mqttUser").value = data.mqttUser
+  document.getElementById("input-mqttPassword").value = data.mqttPassword
+  document.getElementById("input-deviceName").value = data.deviceName
+  document.getElementById("input-deviceDescription").value = data.deviceDescription
+
+  renderSensors(JSON.parse(data.sensors))
+}
+
+async function sendData() {
+  try {
     const body = {
-      ssid,
-      password,
-      mqttIP,
-      mqttPort,
-      mqttUser,
-      mqttPassword,
-      mqttPub,
-      mqttSub,
-      deviceName,
-      deviceDescription
-    }  
-    
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-  
-    const response = await fetch('/setup', {
-      headers: myHeaders,
+      sensors: JSON.stringify(getSensors()),
+      ssid: document.getElementById('input-wifiSsid').value,
+      password: document.getElementById('input-wifiPassword').value,
+      mqttIP: document.getElementById('input-mqttIp').value,
+      mqttPort: document.getElementById('input-mqttPort').value,
+      mqttUser: document.getElementById('input-mqttUser').value,
+      mqttPassword: document.getElementById('input-mqttPassword').value,
+      mqttPub: document.getElementById('input-mqttPub').value,
+      mqttSub: document.getElementById('input-mqttSub').value,
+      deviceName: document.getElementById('input-deviceName').value,
+      deviceDescription: document.getElementById('input-deviceDescription').value
+    }
+
+    await fetch('/data', {
+      headers: { "Content-Type": "application/json" },
       method: "POST",
-      body: JSON.stringify(body) 
+      body: JSON.stringify(body)
     })
 
-    const result = await response.json()
-    console.log(result)
     window.alert("Rebooting...")
   } catch (err) {
     console.error(err);
   }
-});
-
-
-function checkHeight() {
-  const mainElement = document.querySelector('.main');
-  const navbarLinkFirstElement = document.querySelector('.navbar__link:first-child')
-  const navbarLinkLastElement = document.querySelector('.navbar__link:last-child')
-  const navbarElement = document.querySelector('.navbar')
-  const viewportHeight = window.innerHeight;
-  
-  if (mainElement.scrollHeight >= viewportHeight) {
-    mainElement.style.borderRadius = '0';
-    navbarElement.style.borderRadius = '0';
-    navbarLinkFirstElement.style.borderRadius = '0';
-    navbarLinkLastElement.style.borderRadius = '0'
-  } else {
-    mainElement.style.borderRadius = '36px';
-    navbarElement.style.borderRadius = '36px';
-    navbarLinkFirstElement.style["border-top-left-radius"] = '36px';
-    navbarLinkLastElement.style["border-top-right-radius"] = '36px'
-  }
-}
-
-const sensors = [
-  {
-    id: "jksdhabfiiuehfouewf",
-    type: "temperature",
-    pins: [1,2,3]
-  },
-  {
-    id: "aknfgbnojahsdfogho",
-    type: "light",
-    pins: [23,34]
-  }
-]
-
-function renderSensors(sensors){
-  sensors.forEach((sensor) => {
-    const sensorElement = createSensorElement(sensor);
-    
-    const sensorsElement = document.getElementById('sensors')
-    sensorsElement.appendChild(sensorElement)
-  })
-}
-
-function renderSelectOptions(){
-  const selectType = document.getElementById('sensorType-NEW')
-
-  options.forEach(option => {
-    const optionElement = document.createElement('option')
-    optionElement.value = option
-    optionElement.textContent = option[0].toUpperCase() + option.substring(1)
-    
-    selectType.appendChild(optionElement)
-  })
 }
 
 function randomID(length = 15) {
@@ -177,8 +148,7 @@ function randomID(length = 15) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   const charactersLength = characters.length;
   for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random()
- * charactersLength));
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
 
   return result;
@@ -190,67 +160,71 @@ function randomID(length = 15) {
 =========================
 */
 
-function createSensorConfElement(){
+function createSensorConfElement() {
   const sensorConfElement = document.createElement('div')
   sensorConfElement.className = 'sensor__conf'
-  
+
   return sensorConfElement
 }
 
-function createSensorFieldElement(content){
+function createSensorFieldElement(content) {
   const sensorFieldElement = document.createElement('p')
   sensorFieldElement.className = 'sensor__field'
   sensorFieldElement.textContent = content
-  
+
   return sensorFieldElement
 }
 
-function createSensorIdElement(id){
+function createSensorIdElement(id) {
   const sensorConfElement = createSensorConfElement();
   const sensorFieldElement = createSensorFieldElement('Id');
   const idElement = document.createElement('p')
   idElement.textContent = id
-  
+
   sensorConfElement.appendChild(sensorFieldElement)
   sensorConfElement.appendChild(idElement)
-  
+
   return sensorConfElement
 }
 
-function createSensorTypeElement(type){
+function createSensorTypeElement(type, id) {
   const sensorConfElement = createSensorConfElement();
   const sensorFieldElement = createSensorFieldElement('Type');
   const selectElement = document.createElement('select')
-  
+  selectElement.id = `type-${id}`
+
+  const options = data?.sensorOptions || sensorOptions
+
   options.forEach(option => {
     const optionElement = document.createElement('option')
     optionElement.value = option
     optionElement.textContent = option[0].toUpperCase() + option.substring(1)
-    if(type === option) optionElement.selected = true
-    
+    if (type === option) optionElement.selected = true
+
     selectElement.appendChild(optionElement)
   })
-  
+
   sensorConfElement.appendChild(sensorFieldElement)
   sensorConfElement.appendChild(selectElement)
-  
+
   return sensorConfElement
 }
 
-function createSensorPinElement(num, pins){
+function createSensorPinElement(id, num, pins) {
   const sensorConfElement = createSensorConfElement();
   const sensorFieldElement = createSensorFieldElement(`Pin ${num}`);
   const inputElement = document.createElement('input')
+  inputElement.id = `pin${num}-${id}`
   inputElement.type = 'number'
   inputElement.value = pins[num - 1]
-  
+
   sensorConfElement.appendChild(sensorFieldElement)
   sensorConfElement.appendChild(inputElement)
-  
+
   return sensorConfElement
 }
 
-function createSensorDeleteElement(id){
+function createSensorDeleteElement(id) {
   const sensorConfElement = createSensorConfElement();
   const sensorFieldElement = createSensorFieldElement('Del');
   sensorFieldElement.classList.add('field__del')
@@ -258,24 +232,25 @@ function createSensorDeleteElement(id){
   buttonElement.classList.add('sensor__btn', 'sensor__del')
   buttonElement.textContent = 'X'
   buttonElement.onclick = () => removeSensor(id)
-  
+
   sensorConfElement.appendChild(sensorFieldElement)
   sensorConfElement.appendChild(buttonElement)
-  
+
   return sensorConfElement
 }
 
-function createSensorElement(sensor){
+function createSensorElement(sensor) {
+  const id = sensor.id
   const sensorElement = document.createElement('div')
-  sensorElement.id = sensor.id
-  sensorElement.className = 'sensor'
+  sensorElement.id = id
+  sensorElement.classList.add('sensor', 'sensor-data')
 
-  const sensorIdElement = createSensorIdElement(sensor.id);
-  const sensorTypeElement = createSensorTypeElement(sensor.type);
-  const sensorPin1Element = createSensorPinElement(1, sensor.pins);
-  const sensorPin2Element = createSensorPinElement(2, sensor.pins);
-  const sensorPin3Element = createSensorPinElement(3, sensor.pins);
-  const sensorDeleteElement = createSensorDeleteElement(sensor.id);
+  const sensorIdElement = createSensorIdElement(id);
+  const sensorTypeElement = createSensorTypeElement(sensor.type, id);
+  const sensorPin1Element = createSensorPinElement(id, 1, sensor.pins);
+  const sensorPin2Element = createSensorPinElement(id, 2, sensor.pins);
+  const sensorPin3Element = createSensorPinElement(id, 3, sensor.pins);
+  const sensorDeleteElement = createSensorDeleteElement(id);
 
   sensorElement.appendChild(sensorIdElement)
   sensorElement.appendChild(sensorTypeElement)
@@ -287,14 +262,14 @@ function createSensorElement(sensor){
   return sensorElement
 }
 
-function createSensor(){
+function createSensor() {
   const sensorsElement = document.getElementById('sensors')
 
   const sensorTypeElement = document.getElementById('sensorType-NEW')
   const sensorPIN1Element = document.getElementById('sensorPIN1-NEW')
   const sensorPIN2Element = document.getElementById('sensorPIN2-NEW')
   const sensorPIN3Element = document.getElementById('sensorPIN3-NEW')
-  
+
   const sensor = {
     "id": randomID(),
     "type": sensorTypeElement.value,
@@ -314,7 +289,62 @@ function createSensor(){
   sensorsElement.appendChild(sensorElement)
 }
 
-function removeSensor(id){
+function getSensors() {
+  const sensorElements = document.querySelectorAll('.sensor-data');
+  const sensors = []
+
+  sensorElements.forEach((sensorElement) => {
+    const id = sensorElement.id
+    const type = document.getElementById(`type-${sensorElement.id}`).value
+    const pins = []
+
+    const pin1 = document.getElementById(`pin1-${id}`).value
+    pin1 ? pins.push(pin1) : "" 
+
+    const pin2 = document.getElementById(`pin2-${id}`).value
+    pin2 ? pins.push(pin2) : ""
+    
+    const pin3 = document.getElementById(`pin3-${id}`).value
+    pin3 ? pins.push(pin3) : ""
+
+    sensors.push({ id, type, pins })
+  })
+
+  return sensors
+}
+
+function removeSensor(id) {
   document.getElementById(id).remove();
   checkHeight();
 }
+
+function renderSensors(sensors) {
+  if(!sensors) return
+
+  sensors.forEach((sensor) => {
+    const sensorElement = createSensorElement(sensor);
+
+    const sensorsElement = document.getElementById('sensors')
+    sensorsElement.appendChild(sensorElement)
+  })
+}
+
+function renderSelectOptions(options) {
+  const selectType = document.getElementById('sensorType-NEW')
+
+  options.forEach(option => {
+    const optionElement = document.createElement('option')
+    optionElement.value = option
+    optionElement.textContent = option[0].toUpperCase() + option.substring(1)
+
+    selectType.appendChild(optionElement)
+  })
+}
+
+/*
+=========================
+    Default Values
+=========================
+*/
+
+const sensorOptions = ['light', 'humidity', 'temperature', 'luminosity']

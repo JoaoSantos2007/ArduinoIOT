@@ -30,25 +30,33 @@ void setupServer(AsyncWebServer& server, Preferences* preferences){
   });
 
   server.on("/data", HTTP_GET, [preferences](AsyncWebServerRequest *request) {
-    String jsonData = getDeviceDataJson(preferences);
+    String jsonData = getData(preferences);
     request->send(200, "application/json", jsonData);
   });
 
   server.on(
-    "/setup", HTTP_POST, 
+    "/data", HTTP_POST, 
     [](AsyncWebServerRequest *request){}, 
     NULL, 
     [preferences](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-      handleSetup(request, data, len, index, total, preferences);
+      handleData(request, data, len, index, total, preferences);
     }
   );
 
   server.begin();
 }
 
-String getDeviceDataJson(Preferences* preferences) {
+String getData(Preferences* preferences) {
   StaticJsonDocument<200> jsonDoc;
 
+  JsonArray sensorOptions = jsonDoc.createNestedArray("sensorOptions");
+  sensorOptions.add("light");
+  sensorOptions.add("temt6000");
+  sensorOptions.add("humidity");
+  sensorOptions.add("temperature");
+  sensorOptions.add("luminosity");
+
+  jsonDoc["sensors"] = preferences->getString("SENSORS");
   jsonDoc["ipAddress"] = WiFi.localIP().toString();
   jsonDoc["ssid"] = preferences->getString("WIFI_SSID");
   jsonDoc["wifiPassword"] = preferences->getString("WIFI_PASSWORD");
@@ -72,7 +80,7 @@ String getDeviceDataJson(Preferences* preferences) {
   return jsonString;
 }
 
-void handleSetup(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total, Preferences* preferences) {
+void handleData(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total, Preferences* preferences) {
   // Converta os dados recebidos para uma String
   String body = "";
   for (size_t i = 0; i < len; i++) {
@@ -91,6 +99,7 @@ void handleSetup(AsyncWebServerRequest *request, uint8_t *data, size_t len, size
   }
 
   // Verificar os valores do JSON e Guardar na memória permanente
+  if (jsonDoc.containsKey("sensors")) preferences->putString("SENSORS", String(jsonDoc["sensors"].as<const char*>()));
   if (jsonDoc.containsKey("ssid")) preferences->putString("WIFI_SSID", String(jsonDoc["ssid"].as<const char*>()));
   if (jsonDoc.containsKey("password")) preferences->putString("WIFI_PASSWORD", String(jsonDoc["password"].as<const char*>()));
   if (jsonDoc.containsKey("mqttIP")) preferences->putString("MQTT_ADDRESS", String(jsonDoc["mqttIP"].as<const char*>()));
