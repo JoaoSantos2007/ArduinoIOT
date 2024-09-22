@@ -19,9 +19,8 @@ void setupMQTT(PubSubClient& client, Preferences& preferences, CallbackType call
     mqttIP.fromString(mqttServer);
 
     client.setServer(mqttIP, mqttPort);
-    // client.setCallback(receiveMQTT);
-    client.setCallback([callback](char* topic, byte* payload, unsigned int length){
-      receiveMQTT(topic, payload, length, callback);
+    client.setCallback([&preferences, callback](char* topic, byte* payload, unsigned int length){
+      receiveMQTT(topic, payload, length, preferences, callback);
     });
   }
 }
@@ -60,7 +59,7 @@ bool reconnectMQTT(PubSubClient& client, Preferences& preferences){
 }
 
 // Receive a broker message
-void receiveMQTT(char* topic, byte* payload, unsigned int length, CallbackType callback){
+void receiveMQTT(char* topic, byte* payload, unsigned int length, Preferences& preferences, CallbackType callback){
   Serial.println("Message received");
   String msg;
   //obtem a string do payload recebido
@@ -75,7 +74,7 @@ void receiveMQTT(char* topic, byte* payload, unsigned int length, CallbackType c
   StaticJsonDocument<2048> doc;
   deserializeJson(doc, payload);
 
-  callback(doc);
+  callback(preferences, doc);
 }
 
 // Send a message in MQTT

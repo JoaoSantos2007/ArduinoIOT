@@ -6,12 +6,12 @@
 #include <ArduinoJson.h>
 #include <Preferences.h>
 
-typedef void (*CallbackType)(const JsonDocument& doc);
+typedef void (*CallbackType)(Preferences& preferences, const JsonDocument& doc);
 
 void setupMQTT(PubSubClient& client, Preferences& preferences, CallbackType callback);
 void verifyMQTTConnection(PubSubClient& client, Preferences& preferences);
 bool reconnectMQTT(PubSubClient& client, Preferences& preferences);
-void receiveMQTT(char* topic, byte* payload, unsigned int length, CallbackType callback);
+void receiveMQTT(char* topic, byte* payload, unsigned int length, Preferences& preferences, CallbackType callback);
 void sendMQTT(PubSubClient& client, Preferences& preferences, StaticJsonDocument<256> doc);
 
 #endif

@@ -5,83 +5,122 @@
 */
 
 #include "sensor.h"
-
-// Light variables
-const short int switch1_PIN = 35;
-const short int switch2_PIN = 25;
-const short int light1_PIN = 32;
-const short int light2_PIN = 33;
-const short int luminosity_PIN = 34;
-short int switch1 = 0;
-short int switch2 = 0;
-
-// Delay time
-long lastDebounceTime = 0;
-long debounceDelay = 10000;
+DHT* dht;
 
 // Setup sensors
-void setupSensors(){
-  pinMode(switch1_PIN, INPUT);
-  pinMode(switch2_PIN, INPUT);
-  pinMode(light1_PIN, OUTPUT);
-  pinMode(light2_PIN, OUTPUT);
-  //pinMode(luminosity_PIN, INPUT);
-  //analogReadResolution(10);
+void setupSensors(StaticJsonDocument<2048> &sensorsDoc, Preferences &preferences){
+  String sensors = preferences.getString("SENSORS", "[]");
+
+  DeserializationError error = deserializeJson(sensorsDoc, sensors);
+  if (error) return;
+  
+  for (JsonObject sensor : sensorsDoc.as<JsonArray>()) {
+    String type = sensor["type"];
+    JsonArray pins = sensor["pins"];
+
+    // Configura os pinos de acordo com o tipo de sensor
+    if (type == "light") {
+      pinMode(pins[0].as<const int>(), INPUT);
+      pinMode(pins[1].as<const int>(), OUTPUT);
+
+      sensor["switch"] = 0;
+      sensor["interval"] = 0;
+      sensor["lastTime"] = 0;
+    } else if (type == "dht") {
+      pinMode(pins[0].as<const int>(), INPUT);
+
+      dht = new DHT(pins[0].as<const int>(), DHT11);
+      dht->begin();
+
+      sensor["interval"] = 2000;
+      sensor["lastTime"] = 0;
+    }
+  }
+
+  serializeJsonPretty(sensorsDoc, Serial);
+}
+
+void readSensors(StaticJsonDocument<2048> &sensorsDoc, PubSubClient &client, Preferences &preferences, void (*sendMQTT)(PubSubClient&, Preferences&, StaticJsonDocument<256>)){
+  String deviceName = preferences.getString("DEVICE_NAME");
+
+  for (JsonObject sensor : sensorsDoc.as<JsonArray>()) {
+    unsigned long currentMillis = millis();
+    if (currentMillis - sensor["lastTime"].as<const unsigned long>() < sensor["interval"].as<const unsigned long>()) return;
+
+    
+    sensor["lastTime"] = currentMillis;
+    String type = sensor["type"];
+
+    StaticJsonDocument<256> doc;
+    doc["device"] = deviceName;
+    doc["id"] = sensor["id"];
+    doc["type"] = sensor["type"];
+
+    // lê os sensores de acordo com o tipo
+    if (type == "light") {
+      bool changed = readSwitch(sensor);
+
+      if(changed){
+        doc["light"] = digitalRead(sensor["pins"][1].as<const int>());
+
+        sendMQTT(client, preferences, doc);
+      }
+    } else if (type == "dht") {
+      float temperature, humidity, heatIndex;
+      readDHT(sensor, temperature, humidity, heatIndex);
+      doc["temperature"] = temperature;
+      doc["humidity"] = humidity;
+      doc["heatIndex"] = heatIndex;
+
+      sendMQTT(client, preferences, doc);
+    }
+  }
+}
+
+void sensorCallback(Preferences& preferences, const JsonDocument& doc){
+  String sensors = preferences.getString("SENSORS", "[]");
+
+  StaticJsonDocument<2048> sensorsDoc;
+  DeserializationError error = deserializeJson(sensorsDoc, sensors);
+  if (error) return;
+
+  for (JsonObject sensor : sensorsDoc.as<JsonArray>()) {
+    if (strcmp(doc["id"].as<const char*>(), sensor["id"].as<const char*>()) == 0){
+      String type = sensor["type"];
+
+      if (type == "light") {
+        updateLightState(sensor["pins"][1].as<const int>(), true, doc["light"].as<const int>());
+      }
+    }
+  }
 }
 
 // Update light state
-void updateLightState(int light_pin){
+void updateLightState(int light_pin, bool manual = false, int state = 0){
   int newState = !digitalRead(light_pin);
+  if(manual) newState = state; 
+
   digitalWrite(light_pin, newState);
 }
 
-// Read light switches
-void readSwitches(){
-  if(switch1 != digitalRead(switch1_PIN)){
-    switch1 = !switch1;
-    updateLightState(light1_PIN);
+// Read light switch
+bool readSwitch(JsonObject sensor){
+  if(sensor["switch"] != digitalRead(sensor["pins"][0].as<const int>())){
+    sensor["switch"] = !sensor["switch"].as<const int>();
+    updateLightState(sensor["pins"][1].as<const int>());
+
+    return true;
   }
 
-  if(switch2 != digitalRead(switch2_PIN)){
-    switch2 = !switch2;
-    updateLightState(light2_PIN);
-  }
+  return false;
 }
 
-void readLuminosity(){
-  float volts =  analogRead(luminosity_PIN) * 5 / 1024.0; // Convert reading to VOLTS
-  float VoltPercent = analogRead(luminosity_PIN) / 1024.0 * 100; //Reading to Percent of Voltage
+void readDHT(JsonObject sensor, float &temperature, float &humidity, float &heatIndex){
+  humidity = dht->readHumidity();
+  temperature = dht->readTemperature();
 
-  //Conversions from reading to LUX
-  float amps = volts / 10000.0;  // em 10,000 Ohms (Convert to Current)
-  float microamps = amps * 1000000; // Convert to Microamps
-  float lux = microamps * 2.0; // Convert to Lux */
+  if (isnan(humidity) || isnan(temperature)) return;
 
-  // Output Serial
-  Serial.print("LUX - ");
-  Serial.print(lux);
-  Serial.println(" lx");
-  Serial.print(VoltPercent);
-  Serial.println("%");
-  Serial.print(volts);
-  Serial.println(" volts");
-  Serial.print(amps);
-  Serial.println(" amps");
-  Serial.print(microamps);
-  Serial.println(" microamps");
-}
-
-void readSensors(){
-  //readSwitches();
-  //readLuminosity();
-
-  //delay(3000);
-}
-
-void sensorCallback(const JsonDocument& doc){
-  Serial.println("Sensor callback called");
-  serializeJsonPretty(doc, Serial);
-  
-  if(doc["test"] == "ok1") updateLightState(light1_PIN);
-  if(doc["test"] == "ok2") updateLightState(light2_PIN);
+  // Compute heat index in Celsius (isFahreheit = false)
+  heatIndex = dht->computeHeatIndex(temperature, humidity, false);
 }

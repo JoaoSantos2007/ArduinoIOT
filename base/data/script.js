@@ -299,13 +299,13 @@ function getSensors() {
     const pins = []
 
     const pin1 = document.getElementById(`pin1-${id}`).value
-    pin1 ? pins.push(pin1) : "" 
+    pin1 ? pins.push(Number(pin1)) : "" 
 
     const pin2 = document.getElementById(`pin2-${id}`).value
-    pin2 ? pins.push(pin2) : ""
+    pin2 ? pins.push(Number(pin2)) : ""
     
     const pin3 = document.getElementById(`pin3-${id}`).value
-    pin3 ? pins.push(pin3) : ""
+    pin3 ? pins.push(Number(pin3)) : ""
 
     sensors.push({ id, type, pins })
   })

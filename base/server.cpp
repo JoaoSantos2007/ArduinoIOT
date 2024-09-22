@@ -52,8 +52,7 @@ String getData(Preferences* preferences) {
   JsonArray sensorOptions = jsonDoc.createNestedArray("sensorOptions");
   sensorOptions.add("light");
   sensorOptions.add("temt6000");
-  sensorOptions.add("humidity");
-  sensorOptions.add("temperature");
+  sensorOptions.add("dht");
   sensorOptions.add("luminosity");
 
   jsonDoc["sensors"] = preferences->getString("SENSORS");
