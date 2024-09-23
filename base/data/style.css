@@ -180,6 +180,14 @@ body{
   width: 32px;
 }
 
+.sensor__conf .input__id{
+  width: 128px;
+}
+
+.sensor__conf .input__interval{
+  width: 64px;
+}
+
 .sensors__create .sensor{
   margin-bottom: 0px;
 }
@@ -221,8 +229,6 @@ textarea{
   resize: none;
 }
 
-
-
 @media screen and (max-width: 1200px) {
   .main{
     width: 75%;
@@ -235,7 +241,7 @@ textarea{
   }
 }
 
-@media screen and (max-width: 560px) {
+@media screen and (max-width: 640px) {
   .sensor{
     margin-left: 0px;
     overflow-x: scroll;

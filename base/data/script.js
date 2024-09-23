@@ -178,11 +178,14 @@ function createSensorFieldElement(content) {
 function createSensorIdElement(id) {
   const sensorConfElement = createSensorConfElement();
   const sensorFieldElement = createSensorFieldElement('Id');
-  const idElement = document.createElement('p')
-  idElement.textContent = id
+  const inputElement = document.createElement('input')
+  inputElement.classList.add('input__id')
+  inputElement.id = `id-${id}`
+  inputElement.type = 'text'
+  inputElement.value = id
 
   sensorConfElement.appendChild(sensorFieldElement)
-  sensorConfElement.appendChild(idElement)
+  sensorConfElement.appendChild(inputElement)
 
   return sensorConfElement
 }
@@ -224,6 +227,21 @@ function createSensorPinElement(id, num, pins) {
   return sensorConfElement
 }
 
+function createSensorIntervalElement(id, interval) {
+  const sensorConfElement = createSensorConfElement();
+  const sensorFieldElement = createSensorFieldElement('Interval');
+  const inputElement = document.createElement('input')
+  inputElement.classList.add('input__interval')
+  inputElement.id = `interval-${id}`
+  inputElement.type = 'number'
+  inputElement.value = interval
+
+  sensorConfElement.appendChild(sensorFieldElement)
+  sensorConfElement.appendChild(inputElement)
+
+  return sensorConfElement
+}
+
 function createSensorDeleteElement(id) {
   const sensorConfElement = createSensorConfElement();
   const sensorFieldElement = createSensorFieldElement('Del');
@@ -250,6 +268,7 @@ function createSensorElement(sensor) {
   const sensorPin1Element = createSensorPinElement(id, 1, sensor.pins);
   const sensorPin2Element = createSensorPinElement(id, 2, sensor.pins);
   const sensorPin3Element = createSensorPinElement(id, 3, sensor.pins);
+  const sensorIntervalElement = createSensorIntervalElement(id, sensor.interval);
   const sensorDeleteElement = createSensorDeleteElement(id);
 
   sensorElement.appendChild(sensorIdElement)
@@ -257,6 +276,7 @@ function createSensorElement(sensor) {
   sensorElement.appendChild(sensorPin1Element)
   sensorElement.appendChild(sensorPin2Element)
   sensorElement.appendChild(sensorPin3Element)
+  sensorElement.appendChild(sensorIntervalElement)
   sensorElement.appendChild(sensorDeleteElement)
 
   return sensorElement
@@ -269,6 +289,7 @@ function createSensor() {
   const sensorPIN1Element = document.getElementById('sensorPIN1-NEW')
   const sensorPIN2Element = document.getElementById('sensorPIN2-NEW')
   const sensorPIN3Element = document.getElementById('sensorPIN3-NEW')
+  const sensorIntervalElement = document.getElementById('sensorInterval-NEW')
 
   const sensor = {
     "id": randomID(),
@@ -277,13 +298,15 @@ function createSensor() {
       sensorPIN1Element.value,
       sensorPIN2Element.value,
       sensorPIN3Element.value,
-    ]
+    ],
+    "interval": sensorIntervalElement.value
   }
 
   sensorTypeElement.value = 'light';
   sensorPIN1Element.value = '';
   sensorPIN2Element.value = '';
   sensorPIN3Element.value = '';
+  sensorIntervalElement.value = '';
 
   const sensorElement = createSensorElement(sensor)
   sensorsElement.appendChild(sensorElement)
@@ -294,22 +317,24 @@ function getSensors() {
   const sensors = []
 
   sensorElements.forEach((sensorElement) => {
-    const id = sensorElement.id
+    const id = document.getElementById(`id-${sensorElement.id}`).value
     const type = document.getElementById(`type-${sensorElement.id}`).value
     const pins = []
 
-    const pin1 = document.getElementById(`pin1-${id}`).value
+    const pin1 = document.getElementById(`pin1-${sensorElement.id}`).value
     pin1 ? pins.push(Number(pin1)) : "" 
 
-    const pin2 = document.getElementById(`pin2-${id}`).value
+    const pin2 = document.getElementById(`pin2-${sensorElement.id}`).value
     pin2 ? pins.push(Number(pin2)) : ""
     
-    const pin3 = document.getElementById(`pin3-${id}`).value
+    const pin3 = document.getElementById(`pin3-${sensorElement.id}`).value
     pin3 ? pins.push(Number(pin3)) : ""
 
-    sensors.push({ id, type, pins })
-  })
+    const interval = Number(document.getElementById(`interval-${sensorElement.id}`).value)
 
+    sensors.push({ id, type, pins, interval })
+  })
+  
   return sensors
 }
 
@@ -347,4 +372,4 @@ function renderSelectOptions(options) {
 =========================
 */
 
-const sensorOptions = ['light', 'humidity', 'temperature', 'luminosity']
+const sensorOptions = ['light', 'dht', 'luminosity', 'ir']

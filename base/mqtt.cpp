@@ -60,16 +60,12 @@ bool reconnectMQTT(PubSubClient& client, Preferences& preferences){
 
 // Receive a broker message
 void receiveMQTT(char* topic, byte* payload, unsigned int length, Preferences& preferences, CallbackType callback){
-  Serial.println("Message received");
   String msg;
   //obtem a string do payload recebido
   for (int i = 0; i < length; i++){
     char c = (char)payload[i];
     msg += c;
   }
-
-  Serial.print(F("Receiving: "));
-  Serial.println(msg);
 
   StaticJsonDocument<2048> doc;
   deserializeJson(doc, payload);
